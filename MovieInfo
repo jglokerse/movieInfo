@@ -1,0 +1,49 @@
+#!/usr/bin/php
+<?php
+
+/*
+
+Created by John Lokerse on 20-04-2013.
+Version 1.3
+
+*/
+
+$array = array();
+$i = 1;
+
+while ( $i < $argc ) {
+	array_push($array, $argv[$i]);
+	$i++;
+}
+
+$arg = implode("+", $array);
+
+function my_movinfo ($arg) {
+
+	$decode=json_decode(file_get_contents('http://imdbapi.org/?title=' . $arg));
+	
+	if ( ! is_array($decode) ) {
+		if ( $decode->code == 501 ){
+			echo "I need a movie title to check. Please do MovieInfo <title>.\n";
+		} else {
+			echo "\n-----------------------";
+			echo "\n- " . $decode->code . ": " . $decode->error . " -\n";
+			echo "-----------------------\n\n";
+		}
+	} else {
+		foreach ($decode as $key=>$value)
+		{
+			echo "-----";
+			echo "\n Title: \n" . $value->title . "\n-";
+			echo "\n Plot: \n" . $value->plot_simple . "\n-";
+			echo "\n Genres: \n" . implode(", " , $value->genres) . "\n";
+			echo "----- \n";
+		}
+	}		
+}
+
+
+my_movinfo($arg);
+
+
+?>
